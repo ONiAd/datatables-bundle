@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Fixtures\AppBundle\DataTable\Type;
+namespace Omines\Tests\Fixtures\AppBundle\DataTable\Type;
 
 use Omines\DataTablesBundle\Adapter\ArrayAdapter;
 use Omines\DataTablesBundle\Column\DateTimeColumn;

@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Omines\Tests\Unit;
 
 use Omines\DataTablesBundle\Filter\ChoiceFilter;
 use Omines\DataTablesBundle\Filter\TextFilter;

@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Fixtures;
+namespace Omines\Tests\Fixtures;
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;

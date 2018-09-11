@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Fixtures\AppBundle\Entity;
+namespace Omines\Tests\Fixtures\AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;

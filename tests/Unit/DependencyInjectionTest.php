@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Omines\Tests\Unit;
 
 use Omines\DataTablesBundle\DataTablesBundle;
 use Omines\DataTablesBundle\DependencyInjection\Configuration;

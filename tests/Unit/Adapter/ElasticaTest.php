@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Adapter;
+namespace Omines\Tests\Unit\Adapter;
 
 use Elastica\Response;
 use Elastica\Transport\AbstractTransport;

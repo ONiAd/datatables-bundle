@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Omines\Tests\Unit;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;

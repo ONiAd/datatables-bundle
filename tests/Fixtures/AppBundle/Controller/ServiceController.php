@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Fixtures\AppBundle\Controller;
+namespace Omines\Tests\Fixtures\AppBundle\Controller;
 
 use Omines\DataTablesBundle\Controller\DataTablesTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

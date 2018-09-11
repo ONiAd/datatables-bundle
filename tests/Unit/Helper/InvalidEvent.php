@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Helper;
+namespace Omines\Tests\Unit\Helper;
 
 use Omines\DataTablesBundle\Event\AbstractEvent;
 

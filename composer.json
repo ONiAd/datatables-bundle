@@ -54,7 +54,7 @@
         "psr-4": { "Omines\\DataTablesBundle\\": "src/"}
     },
     "autoload-dev": {
-        "psr-4": { "Tests\\": "tests/"}
+        "psr-4": { "Omines\\Tests\\": "tests/"}
     },
     "config": {
         "preferred-install": "dist",

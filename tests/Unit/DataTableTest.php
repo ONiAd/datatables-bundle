@@ -17,7 +17,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Tests\Unit;
+namespace Omines\Tests\Unit;
 
 use Omines\DataTablesBundle\Adapter\ArrayAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;

@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Functional;
+namespace Omines\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Fixtures\AppBundle\Controller;
+namespace Omines\Tests\Fixtures\AppBundle\Controller;
 
 use Doctrine\ORM\Query;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;

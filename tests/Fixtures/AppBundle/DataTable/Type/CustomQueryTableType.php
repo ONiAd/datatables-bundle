@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Fixtures\AppBundle\DataTable\Type;
+namespace Omines\Tests\Fixtures\AppBundle\DataTable\Type;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;

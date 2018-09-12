@@ -48,7 +48,7 @@
         {% endif %}
 
         {% if datatable.option('stateSave') %}
-        {% for column in datatable.state.columns %}
+        {% for column in datatable.columns %}
         {% if column.filter != null %}{% include column.filter.templateJs %}{% endif %}
         {% endfor %}
         {% endif %}

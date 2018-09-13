@@ -4,10 +4,5 @@
             {% if column.filter.placeholder != null %}
                 placeholder="{{ column.filter.placeholder|trans }}"
             {% endif %}
-           value="{{ column.searchValue }}">
-    <script>
-        document.getElementById('domains').addEventListener('restore', function (e, data) {
-            console.log(data);
-        });
-    </script>
+           value="{{ (datatable.state.searchColumns[column.name] is defined)? datatable.state.searchColumns[column.name].value : ''}}">
 </label>

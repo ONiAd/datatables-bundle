@@ -82,4 +82,10 @@ abstract class AbstractFilter
      * @return bool
      */
     abstract public function isValidValue($value): bool;
+
+    public static function factory($options=[]){
+        $object = new static;
+        $object->set($options);
+        return $object;
+    }
 }

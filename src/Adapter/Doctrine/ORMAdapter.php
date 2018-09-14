@@ -259,6 +259,7 @@ class ORMAdapter extends AbstractAdapter
     {
         $parts = explode('.', $field);
         if (count($parts) < 2) {
+            if (count($parts)) return $field;
             throw new InvalidConfigurationException(sprintf("Field name '%s' must consist at least of an alias and a field separated with a period", $field));
         }
         list($origin, $target) = $parts;

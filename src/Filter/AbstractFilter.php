@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Omines\DataTablesBundle\Filter;
 
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractFilter
@@ -24,6 +25,9 @@ abstract class AbstractFilter
 
     /** @var string */
     protected $operator;
+
+    /** @var callable */
+    protected $query;
 
     /**
      * @param array $options
@@ -44,11 +48,14 @@ abstract class AbstractFilter
      */
     protected function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'template_html' => null,
-            'template_js' => null,
-            'operator' => '=',
-        ]);
+        $resolver->setDefaults(
+            [
+                'template_html' => null,
+                'template_js'   => null,
+                'operator'      => '=',
+                'query'         => null,
+            ]
+        );
 
         return $this;
     }
@@ -83,9 +90,27 @@ abstract class AbstractFilter
      */
     abstract public function isValidValue($value): bool;
 
-    public static function factory($options=[]){
+    public static function factory($options = [])
+    {
         $object = new static;
         $object->set($options);
+
         return $object;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    /**
+     * @param callable $query
+     */
+    public function setQuery(callable $query): void
+    {
+        $this->query = $query;
     }
 }

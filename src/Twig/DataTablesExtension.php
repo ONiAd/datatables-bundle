@@ -36,15 +36,15 @@ class DataTablesExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('datatable_settings', function (DataTable $dataTable) {
-                return json_encode([
+            new \Twig_SimpleFunction('datatable_settings', function (DataTable $dataTable,$options=[]) {
+                return json_encode(array_merge([
                     'name' => $dataTable->getName(),
                     'method' => $dataTable->getMethod(),
                     'state' => $dataTable->getPersistState(),
                     'options' => [
                         'language' => $this->getLanguageSettings($dataTable),
                     ],
-                ]);
+                ],$options));
             }, ['is_safe' => ['html']]),
         ];
     }

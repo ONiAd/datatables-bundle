@@ -40,13 +40,12 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
      */
     private function processSearchColumns(QueryBuilder $queryBuilder, DataTableState $state)
     {
-
         foreach ($state->getSearchColumns() as $searchInfo) {
             /** @var AbstractColumn $column */
             $column = $searchInfo['column'];
             $search = $searchInfo['search'];
 
-            if (!empty($search) && null !== ($filter = $column->getFilter())) {
+            if (!$this->isEmpty($search) && null !== ($filter = $column->getFilter())) {
                 if(null !== ($query = $filter->getQuery()) && is_callable($query)){
                     $query($queryBuilder,$column,$search);
                 } else {
@@ -54,6 +53,12 @@ class SearchCriteriaProvider implements QueryBuilderProcessorInterface
                 }
             }
         }
+
+    }
+
+    private function isEmpty($value)
+    {
+        return $value === null || $value === [] || $value === '';
     }
 
     /**

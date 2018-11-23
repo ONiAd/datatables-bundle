@@ -113,7 +113,7 @@ class DataTableState
         }
     }
 
-    /**
+     /**
      * @param ParameterBag $parameters
      */
     private function handleSearch(ParameterBag $parameters)
@@ -121,11 +121,15 @@ class DataTableState
         foreach ($parameters->get('columns', []) as $key => $search) {
             $column = $this->dataTable->getColumn((int) $key);
             $value = $this->isInitial ? $search : $search['search']['value'];
-
-            if ($column->isSearchable() && !empty($value) && null !== $column->getFilter() && $column->getFilter()->isValidValue($value)) {
+            if ($column->isSearchable() && !$this->isEmpty($value) && null !== $column->getFilter() && $column->getFilter()->isValidValue($value)) {
                 $this->setColumnSearch($column, $value);
             }
         }
+    }
+
+    private function isEmpty($value)
+    {
+        return $value === null || $value === [] || $value === '';
     }
 
     /**

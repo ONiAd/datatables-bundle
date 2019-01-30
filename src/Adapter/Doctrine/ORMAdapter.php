@@ -231,6 +231,7 @@ class ORMAdapter extends AbstractAdapter
     /**
      * @param $identifier
      * @return int
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     protected function getCount(QueryBuilder $queryBuilder, $identifier)
     {
@@ -238,15 +239,17 @@ class ORMAdapter extends AbstractAdapter
 
         $qb->resetDQLPart('orderBy');
         $gb = $qb->getDQLPart('groupBy');
-        if (empty($gb) || !in_array($identifier, $gb, true)) {
-            $qb->select($qb->expr()->count($identifier));
 
+        if (empty($gb) || !in_array($identifier, array_reduce($gb,function($c,Query\Expr\GroupBy $i){return array_merge($c,$i->getParts());},[]), true)) {
+            $qb->select($qb->expr()->count($identifier));
             return (int) $qb->getQuery()->getSingleScalarResult();
         } else {
-            $qb->resetDQLPart('groupBy');
-            $qb->select($qb->expr()->countDistinct($identifier));
+            $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
+            $nb->select("COUNT(*)")
+                ->from("(".$qb->getQuery()->getSql().") ",'n')
+                ->setParameters((array)$qb->getParameters());
 
-            return (int) $qb->getQuery()->getSingleScalarResult();
+            return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
         }
     }
 

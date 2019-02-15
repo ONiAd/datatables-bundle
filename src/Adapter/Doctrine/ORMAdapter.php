@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Omines\DataTablesBundle\Adapter\Doctrine;
 
+use Doctrine\DBAL\SQLParserUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
@@ -238,21 +239,26 @@ class ORMAdapter extends AbstractAdapter
     protected function getCount(QueryBuilder $queryBuilder, $identifier)
     {
         $qb = clone $queryBuilder;
+        $qb->resetDQLPart('orderBy');
+        $gb = $qb->getDQLPart('groupBy');
 
-        /** @var \Doctrine\DBAL\Query\QueryBuilder $nb */
-        $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
+        $parts=array_reduce($gb,function($c,Query\Expr\GroupBy $i){return array_merge($c,$i->getParts());},[]);
 
-        $params=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
-            $carry[$item->getName()]=$item->getValue();
-            return $carry;
-        },[]);
-
-        $nb->select("COUNT(*)")
-            ->from("(".$qb->getQuery()->getSql().") ",'n')
-            ->setParameters(array_values($params));
-
-        return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
-
+        if (empty($gb) || strpos(implode(',',$parts),$identifier)===false ) {
+            $qb->select($qb->expr()->count($identifier));
+            return (int) $qb->getQuery()->getSingleScalarResult();
+        } else {
+            /** @var \Doctrine\DBAL\Query\QueryBuilder $nb */
+            $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
+            $params=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
+                $carry[$item->getName()]=$item->getValue();
+                return $carry;
+            },[]);
+            $nb->select("COUNT(*)")
+                ->from("(".$qb->getQuery()->getSql().") ",'n')
+                ->setParameters(array_values($params));
+            return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
+        }
     }
 
     /**

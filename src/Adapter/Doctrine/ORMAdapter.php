@@ -14,6 +14,7 @@ namespace Omines\DataTablesBundle\Adapter\Doctrine;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use Omines\DataTablesBundle\Adapter\AbstractAdapter;
 use Omines\DataTablesBundle\Adapter\AdapterQuery;
@@ -244,10 +245,19 @@ class ORMAdapter extends AbstractAdapter
             $qb->select($qb->expr()->count($identifier));
             return (int) $qb->getQuery()->getSingleScalarResult();
         } else {
+            /** @var \Doctrine\DBAL\Query\QueryBuilder $nb */
             $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
+
+            $params=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
+                $carry[$item->getName()]=$item->getValue();
+                return $carry;
+            },[]);
+
             $nb->select("COUNT(*)")
                 ->from("(".$qb->getQuery()->getSql().") ",'n')
-                ->setParameters((array)$qb->getParameters());
+                ->setParameters(array_values($params));
+
+
 
             return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
         }

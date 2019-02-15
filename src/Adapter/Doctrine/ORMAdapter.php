@@ -121,6 +121,7 @@ class ORMAdapter extends AbstractAdapter
         /** @var Query\Expr\From $fromClause */
         $fromClause = $builder->getDQLPart('from')[0];
         $identifier = "{$fromClause->getAlias()}.{$this->metadata->getSingleIdentifierFieldName()}";
+
         $query->setTotalRows($this->getCount($builder, $identifier));
 
         // Get record count after filtering
@@ -238,29 +239,20 @@ class ORMAdapter extends AbstractAdapter
     {
         $qb = clone $queryBuilder;
 
-        $qb->resetDQLPart('orderBy');
-        $gb = $qb->getDQLPart('groupBy');
+        /** @var \Doctrine\DBAL\Query\QueryBuilder $nb */
+        $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
 
-        if (empty($gb) || !in_array($identifier, array_reduce($gb,function($c,Query\Expr\GroupBy $i){return array_merge($c,$i->getParts());},[]), true)) {
-            $qb->select($qb->expr()->count($identifier));
-            return (int) $qb->getQuery()->getSingleScalarResult();
-        } else {
-            /** @var \Doctrine\DBAL\Query\QueryBuilder $nb */
-            $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
+        $params=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
+            $carry[$item->getName()]=$item->getValue();
+            return $carry;
+        },[]);
 
-            $params=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
-                $carry[$item->getName()]=$item->getValue();
-                return $carry;
-            },[]);
+        $nb->select("COUNT(*)")
+            ->from("(".$qb->getQuery()->getSql().") ",'n')
+            ->setParameters(array_values($params));
 
-            $nb->select("COUNT(*)")
-                ->from("(".$qb->getQuery()->getSql().") ",'n')
-                ->setParameters(array_values($params));
+        return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
 
-
-
-            return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
-        }
     }
 
     /**

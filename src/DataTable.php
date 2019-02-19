@@ -28,7 +28,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @author Robbert Beesems <robbert.beesems@omines.com>
  */
-class DataTable
+class DataTable implements \JsonSerializable
 {
     const DEFAULT_OPTIONS = [
         'jQueryUI' => false,
@@ -295,17 +295,7 @@ class DataTable
             throw new InvalidStateException('The DataTable does not know its state yet, did you call handleRequest?');
         }
 
-        $resultSet = $this->getResultSet();
-        $response = [
-            'draw' => $this->state->getDraw(),
-            'recordsTotal' => $resultSet->getTotalRecords(),
-            'recordsFiltered' => $resultSet->getTotalDisplayRecords(),
-            'data' => iterator_to_array($resultSet->getData()),
-        ];
-        if ($this->state->isInitial()) {
-            $response['options'] = $this->getInitialResponse();
-            $response['template'] = $this->renderer->renderDataTable($this, $this->template, $this->templateParams);
-        }
+        $response = $this->jsonSerialize();
 
         return JsonResponse::create($response);
     }
@@ -480,5 +470,29 @@ class DataTable
         $resolver->setDefaults(self::DEFAULT_OPTIONS);
 
         return $this;
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+        $resultSet = $this->getResultSet();
+        $response = [
+            'draw' => $this->state->getDraw(),
+            'recordsTotal' => $resultSet->getTotalRecords(),
+            'recordsFiltered' => $resultSet->getTotalDisplayRecords(),
+            'data' => iterator_to_array($resultSet->getData()),
+        ];
+        if ($this->state->isInitial()) {
+            $response['options'] = $this->getInitialResponse();
+            $response['template'] = $this->renderer->renderDataTable($this, $this->template, $this->templateParams);
+        }
+
+        return $response;
     }
 }

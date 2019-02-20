@@ -14,6 +14,7 @@ namespace Omines\DataTablesBundle\Adapter\Doctrine;
 
 use Doctrine\DBAL\SQLParserUtils;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
@@ -27,6 +28,7 @@ use Omines\DataTablesBundle\DataTableState;
 use Omines\DataTablesBundle\Exception\InvalidConfigurationException;
 use Omines\DataTablesBundle\Exception\MissingDependencyException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Debug\Exception\ContextErrorException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -196,10 +198,20 @@ class ORMAdapter extends AbstractAdapter
             ;
         }
 
-        foreach ($builder->getQuery()->iterate([], $this->hydrationMode) as $result) {
-            yield $entity = array_values($result)[0];
-            if (Query::HYDRATE_OBJECT === $this->hydrationMode) {
-                $this->manager->detach($entity);
+        /** @var IterableResult $iterator */
+        $iterator=$builder->getQuery()->iterate([], $this->hydrationMode);
+
+        $iterator->rewind();
+        while ( $iterator->valid()) {
+            try {
+                $result=$iterator->current();
+                yield $entity = array_values($result)[0];
+                if (Query::HYDRATE_OBJECT === $this->hydrationMode) {
+                    $this->manager->detach($entity);
+                }
+                $iterator->next();
+            } catch(ContextErrorException $e) {
+                $iterator->next();
             }
         }
     }
@@ -254,9 +266,11 @@ class ORMAdapter extends AbstractAdapter
                 $carry[$item->getName()]=$item->getValue();
                 return $carry;
             },[]);
+
             $nb->select("COUNT(*)")
                 ->from("(".$qb->getQuery()->getSql().") ",'n')
                 ->setParameters(array_values($params));
+
             return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
         }
     }

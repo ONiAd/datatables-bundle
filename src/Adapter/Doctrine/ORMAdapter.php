@@ -263,13 +263,13 @@ class ORMAdapter extends AbstractAdapter
             /** @var \Doctrine\DBAL\Query\QueryBuilder $nb */
             $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
             $params=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
-                $carry[$item->getName()]=$item->getValue();
+                $carry[$item->getName()]=['value'=>$item->getValue(),'type'=>$item->getType()];
                 return $carry;
             },[]);
 
             $nb->select("COUNT(*)")
                 ->from("(".$qb->getQuery()->getSql().") ",'n')
-                ->setParameters(array_values($params));
+                ->setParameters(array_column($params,'value'),array_column($params,'type'));
 
             return (int) $nb->execute()->fetch(\PDO::FETCH_COLUMN);
         }

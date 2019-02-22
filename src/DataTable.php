@@ -481,6 +481,7 @@ class DataTable implements \JsonSerializable
      */
     public function jsonSerialize()
     {
+
         $resultSet = $this->getResultSet();
         $response = [
             'draw' => $this->state->getDraw(),

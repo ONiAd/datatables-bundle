@@ -262,10 +262,15 @@ class ORMAdapter extends AbstractAdapter
         } else {
             /** @var \Doctrine\DBAL\Query\QueryBuilder $nb */
             $nb= $qb->getEntityManager()->getConnection()->createQueryBuilder();
-            $params=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
+            $dparams=array_reduce($qb->getParameters()->toArray(),function($carry,Parameter $item){
                 $carry[$item->getName()]=['value'=>$item->getValue(),'type'=>$item->getType()];
                 return $carry;
             },[]);
+
+            $params=[];
+            if (preg_match_all('@:(\w+)@si',$qb->getDQL(),$matches))
+                foreach($matches[1] as $match) $params[$match]=$dparams[$match];
+
 
             $nb->select("COUNT(*)")
                 ->from("(".$qb->getQuery()->getSql().") ",'n')

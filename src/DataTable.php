@@ -28,7 +28,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @author Robbert Beesems <robbert.beesems@omines.com>
  */
-class DataTable implements \JsonSerializable
+class DataTable implements \JsonSerializable, \Countable
 {
     const DEFAULT_OPTIONS = [
         'jQueryUI' => false,
@@ -495,5 +495,25 @@ class DataTable implements \JsonSerializable
         }
 
         return $response;
+    }
+
+    /**
+     * Count elements of an object
+     * @link https://php.net/manual/en/countable.count.php
+     * @return int The custom count as an integer.
+     * </p>
+     * <p>
+     * The return value is cast to an integer.
+     * @since 5.1.0
+     */
+    public function count()
+    {
+        if (null === $this->state) {
+            $this->state = DataTableState::fromDefaults($this);
+        }
+        if ($set = $this->getResultSet()){
+            return $set->getTotalRecords();
+        }
+        return 0;
     }
 }
